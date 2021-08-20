@@ -24,7 +24,7 @@ func client() {
 	}
 
 	for {
-		_, err := conn.Write([]byte("hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo hi lomogo "))
+		_, err := conn.Write([]byte("yq @ br"))
 		if err != nil {
 			fmt.Println("client write content error:", err)
 			continue

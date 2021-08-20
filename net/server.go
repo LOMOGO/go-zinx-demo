@@ -1,6 +1,7 @@
 package net
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"zinx/iFace"
@@ -24,6 +25,15 @@ func NewServer(name string) iFace.IServer {
 	return s
 }
 
+func CallBackToClient(conn *net.TCPConn, data []byte, cntLen int) error {
+	fmt.Println("[conn handle] call back to client...")
+	if _, err := conn.Write(data[:cntLen]); err != nil {
+		fmt.Println("write back buf error:" , err)
+		return errors.New("CallBackToClient error")
+	}
+	return nil
+}
+
 func (s *Server) Start() {
 	fmt.Printf("[START] Server listener at IP:%s Port:%d, is starting\n", s.IP, s.Port)
 
@@ -42,6 +52,8 @@ func (s *Server) Start() {
 		// 监听成功
 		fmt.Println("start Zinx server ", s.Name, " success, now listening...")
 
+		var cid uint32 = 0
+
 		//启动 server 网络连接业务
 		for {
 			//阻塞等待客户端建立连接请求
@@ -51,25 +63,10 @@ func (s *Server) Start() {
 				continue
 			}
 
-			// 最大回显 512 字节的业务
-			go func() {
-				// 不停从客户端循环的获取数据
-				for {
-					buf := make([]byte, 512)
-					//这里最多只能读取缓冲区 len(buf) （不是 cap(buf)）字节大小的客户端内容
-					readLen, err := conn.Read(buf)
-					if err != nil {
-						fmt.Println("read client content error:", err)
-						continue
-					}
+			dealConn := NewConnection(conn, cid, CallBackToClient)
+			cid++
 
-					// 回显
-					if _, err := conn.Write(buf[:readLen]); err != nil {
-						fmt.Println("write back buf error:", err)
-						continue
-					}
-				}
-			}()
+			go dealConn.Start()
 		}
 	}()
 }
