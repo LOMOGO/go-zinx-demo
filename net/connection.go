@@ -10,17 +10,17 @@ type Connection struct {
 	Conn *net.TCPConn //当前 TCP 连接的 socket 套接字
 	ConnId uint32 //当前连接的 ID （Session ID）， ID 是全局唯一的
 	isClosed bool //当前连接的关闭状态
-	handleAPI iFace.HandFunc //该连接的处理方法 api
+	Router iFace.IRouter //该连接的处理方法 router
 	ExitBuffChan chan bool //告知该连接已经停止/退出的 channel（信号通知）
 }
 
 //NewConnection 新建一个连接
-func NewConnection(conn *net.TCPConn, connID uint32, callbackApi iFace.HandFunc) iFace.IConnection {
+func NewConnection(conn *net.TCPConn, connID uint32, router iFace.IRouter) iFace.IConnection {
 	c := &Connection{
 		Conn: conn,
 		ConnId: connID,
 		isClosed: false,
-		handleAPI: callbackApi,
+		Router: router,
 		ExitBuffChan: make(chan bool, 1),
 	}
 
@@ -36,19 +36,26 @@ func (c *Connection) StartReader() {
 	for {
 		//最大读取 512 字节到 buf 中
 		buf := make([]byte, 512)
-		cntLen, err := c.Conn.Read(buf)
+		//读取客户端发送过来的 request 数据
+		_, err := c.Conn.Read(buf)
 		if err != nil {
 			fmt.Println("recv buf error:", err)
 			c.ExitBuffChan <- true
 			continue
 		}
 
-		//调用当前连接业务（执行的是与当前连接绑定的 handle 方法）
-		if err := c.handleAPI(c.Conn, buf, cntLen); err != nil {
-			fmt.Println("connID:", c.ConnId, " handle is error")
-			c.ExitBuffChan <- true
-			return
+		//得到当前客户端请求的 request 数据
+		req := Request{
+			conn: c,
+			data: buf,
 		}
+
+		//从路由 router 中找到注册绑定 conn 的对应 handle，并执行
+		go func(request iFace.IRequest) { // 这里传入形参
+			c.Router.PreHandle(request)
+			c.Router.Handle(request)
+			c.Router.PostHandle(request)
+		}(&req) // 这里传入实参
 	}
 }
 

@@ -1,7 +1,6 @@
 package net
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"zinx/iFace"
@@ -13,6 +12,7 @@ type Server struct {
 	IPVersion string //服务器绑定的 IP 版本
 	IP string //服务器监听的 IP
 	Port uint32 //服务器监听的端口
+	Router iFace.IRouter //当前 server 由用户绑定的回调 router
 }
 
 func NewServer(name string) iFace.IServer {
@@ -21,17 +21,9 @@ func NewServer(name string) iFace.IServer {
 		IPVersion: "tcp4",
 		IP:        "0.0.0.0",
 		Port:      8080,
+		Router: nil,
 	}
 	return s
-}
-
-func CallBackToClient(conn *net.TCPConn, data []byte, cntLen int) error {
-	fmt.Println("[conn handle] call back to client...")
-	if _, err := conn.Write(data[:cntLen]); err != nil {
-		fmt.Println("write back buf error:" , err)
-		return errors.New("CallBackToClient error")
-	}
-	return nil
 }
 
 func (s *Server) Start() {
@@ -63,7 +55,7 @@ func (s *Server) Start() {
 				continue
 			}
 
-			dealConn := NewConnection(conn, cid, CallBackToClient)
+			dealConn := NewConnection(conn, cid, s.Router)
 			cid++
 
 			go dealConn.Start()
@@ -74,10 +66,15 @@ func (s *Server) Start() {
 func (s *Server) Server() {
 	s.Start()
 
-	//阻塞
+	//阻塞以防止该 goroutine 退出
 	select{}
 }
 
 func (s *Server) Stop() {
 	fmt.Println("[STOP] Zinx server , name " , s.Name)
+}
+
+func (s *Server) AddRouter(router iFace.IRouter) {
+	s.Router = router
+	fmt.Println("add router success")
 }
