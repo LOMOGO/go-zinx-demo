@@ -54,7 +54,7 @@ func client() {
 			continue
 		}
 
-		fmt.Printf(" server call back : %s, cnt = %d\n", buf,  cntLen)
+		fmt.Printf("server call back : %s, cnt = %d\n", buf,  cntLen)
 
 		time.Sleep(1*time.Second)
 	}
