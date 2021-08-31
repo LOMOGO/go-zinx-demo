@@ -4,4 +4,5 @@ package iFace
 type IRequest interface {
 	GetConnection() IConnection //获取请求的连接信息
 	GetData() []byte //获取请求发送来的数据
+	GetID() uint32
 }

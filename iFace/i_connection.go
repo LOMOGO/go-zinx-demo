@@ -13,4 +13,6 @@ type IConnection interface {
 	GetConnID() uint32
 	//RemoteAddr 获取远程客户端地址信息
 	RemoteAddr() net.Addr
+	//SendMsg 直接将 message 数据发送给远程 TCP 客户端
+	SendMsg(msgID uint32, data []byte) error
 }

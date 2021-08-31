@@ -4,7 +4,7 @@ import "zinx/iFace"
 
 type Request struct {
 	conn iFace.IConnection
-	data []byte
+	data iFace.IMessage
 }
 
 func (r *Request) GetConnection() iFace.IConnection {
@@ -12,5 +12,9 @@ func (r *Request) GetConnection() iFace.IConnection {
 }
 
 func (r *Request) GetData() []byte {
-	return r.data
+	return r.data.GetMsgData()
+}
+
+func (r *Request) GetID() uint32 {
+	return r.data.GetMsgID()
 }

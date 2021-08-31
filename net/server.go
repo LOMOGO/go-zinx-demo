@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"zinx/iFace"
+	"zinx/utils"
 )
 
 //Server IServer 接口的实现，定义了一个 Server 的服务器模块
@@ -15,12 +16,32 @@ type Server struct {
 	Router iFace.IRouter //当前 server 由用户绑定的回调 router
 }
 
-func NewServer(name string) iFace.IServer {
+func NewServer(config utils.Config) iFace.IServer {
+	if config.IP == "" {
+		panic("没有给出服务器 IP")
+	}
+	utils.GlobalConfig.IP = config.IP
+
+	if config.Port == 0 {
+		panic("没有给出服务器端口号")
+	}
+	utils.GlobalConfig.Port = config.Port
+
+	if config.Name != utils.GlobalConfig.Name && config.Name != "" {
+		utils.GlobalConfig.Name = config.Name
+	}
+	if config.MaxConn != 0 && config.MaxConn != utils.GlobalConfig.MaxConn {
+		utils.GlobalConfig.MaxConn = config.MaxConn
+	}
+	if config.MaxPackage != 0 && config.MaxPackage != utils.GlobalConfig.MaxPackage {
+		utils.GlobalConfig.MaxPackage = config.MaxPackage
+	}
+
 	s := &Server{
-		Name:      name,
+		Name:      utils.GlobalConfig.Name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      8080,
+		IP:        utils.GlobalConfig.IP,
+		Port:      utils.GlobalConfig.Port,
 		Router: nil,
 	}
 	return s
